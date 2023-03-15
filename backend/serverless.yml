@@ -1,0 +1,267 @@
+org: lamht
+app: serverless-udgram-app
+service: serverless-udgram-app
+
+plugins:
+  - serverless-webpack
+  - serverless-iam-roles-per-function
+  - serverless-plugin-tracing
+  - serverless-aws-documentation
+  - serverless-reqvalidator-plugin
+
+custom:
+  documentation:
+    info:
+      version: "2" # see note above about this being ignored
+      title: "Udacity project 5 API" # see note above about this being ignored
+      description: "This is the API for Udgram app"
+      termsOfService: "http://thanhlam.com/terms-of-service"
+      contact:
+        name: "Lam Huynh"
+        url: "http://thanhlam.com/me"
+        email: "thanhlam@gmail.com"
+      license:
+        name: "Licensing"
+        url: "http://thanhlam.com/licensing"
+      models:
+      - name: "CreateFeedRequest"
+        description: "Model for creating feed"
+        contentType: "application/json"
+        schema: ${file(models/create-feed-model.json)}
+     
+provider:
+  name: aws
+  runtime: nodejs14.x
+  lambdaHashingVersion: '20201221'
+  deploymentMethod: direct
+
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-east-1'}
+
+  tracing:
+    lambda: true
+    apiGateway: true
+
+  # Use these variables in the functions and resouorces section below. For example, 
+  # ${self:provider.environment.ATTACHMENT_S3_BUCKET}
+  environment:
+    FEEDS_TABLE: Feeds-${self:provider.stage}
+    FEEDS_CREATED_AT_INDEX: CreatedAtIndex
+    ATTACHMENT_S3_BUCKET: serverless-c5-Feed-images-d5sf-${self:provider.stage}
+    SIGNED_URL_EXPIRATION: 300
+
+  logs:
+    # Enable API Gateway logs
+    restApi: true  
+
+functions:
+
+  Auth:
+    handler: src/lambda/auth/auth0Authorizer.handler
+
+  # Feed: Configure this function - 
+  # Provide iamRoleStatements property for performing Actions on DynamoDB
+  GetFeeds:
+    handler: src/lambda/http/getFeeds.handler
+    events:
+      - http:
+          method: get
+          path: /api/v0/feed
+          cors: true
+          authorizer: Auth
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+        Resource: 'arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.FEEDS_TABLE}/index/${self:provider.environment.FEEDS_CREATED_AT_INDEX}'
+      - Effect: Allow
+        Action:
+          - xray:PutTelemetryRecords
+          - xray:PutTraceSegments
+        Resource: 
+          - '*'
+
+  # Feed: Configure this function - 
+  # Provide iamRoleStatements property. Decide the Actions and AWS Resource. 
+  # To refer to an AWS resource defined in the "Resources" section, you can use "Resource: !GetAtt <resource-name>.Arn"
+  # To validate incoming HTTP requests, we have provided the request schemas in function definition below. 
+  CreateFeed:
+    handler: src/lambda/http/createFeed.handler
+    events:
+      - http:
+          method: post
+          path: /api/v0/feed
+          cors: true
+          authorizer: Auth
+          reqValidatorName: RequestBodyValidator
+          requestModels:
+            "application/json": "CreateFeedRequest"
+    iamRoleStatements:
+      - Effect: Allow
+        Action:  
+          - dynamodb:PutItem        
+        Resource:
+          - { "Fn::GetAtt": ["FeedsDynamoDBTable", "Arn" ] }
+      - Effect: Allow
+        Action:
+          - xray:PutTelemetryRecords
+          - xray:PutTraceSegments
+        Resource: 
+          - '*'
+
+  
+  # Feed: Configure this function
+  # Provide property for setting up CORS, Authorizer, iamRoleStatements
+  DeleteFeed:
+    handler: src/lambda/http/deleteFeed.handler
+    events:
+      - http:
+          method: delete
+          path: /api/v0/feed/{feedId}
+          cors: true
+          authorizer: Auth
+    iamRoleStatements:
+      - Effect: Allow
+        Action:  
+          - dynamodb:DeleteItem        
+        Resource:
+          - { "Fn::GetAtt": ["FeedsDynamoDBTable", "Arn" ] }
+      - Effect: Allow
+        Action:
+          - xray:PutTelemetryRecords
+          - xray:PutTraceSegments
+        Resource: 
+          - '*'   
+
+  # Feed: Configure this function
+  # Provide property for setting up CORS, Authorizer, iamRoleStatements
+  GenerateUploadUrl:
+    handler: src/lambda/http/generateUploadUrl.handler
+    events:
+      - http:
+          method: post
+          path: /api/v0/feed/{feedId}/signed-url/{fileName}
+          cors: true
+          authorizer: Auth
+    iamRoleStatements:
+      - Effect: Allow
+        Action:  
+          - dynamodb:UpdateItem        
+        Resource:
+          - { "Fn::GetAtt": ["FeedsDynamoDBTable", "Arn" ] }    
+      - Effect: Allow
+        Action:
+          - s3:PutObject
+          - s3:GetObject
+        Resource: arn:aws:s3:::${self:provider.environment.ATTACHMENT_S3_BUCKET}/*       
+      - Effect: Allow
+        Action:
+          - xray:PutTelemetryRecords
+          - xray:PutTraceSegments
+        Resource: 
+          - '*' 
+
+resources:
+  Resources:
+    # Add necessary AWS resources. You will need at least the following AWS resources
+    # Feed: Fill the properties
+    # Feel free to change the names as you like. 
+    GatewayResponseDefault4XX:
+      Type: AWS::ApiGateway::GatewayResponse
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+          gatewayresponse.header.Access-Control-Allow-Methods: "'GET,OPTIONS,POST,DELETE,PATCH,PUT'"
+        ResponseType: DEFAULT_4XX
+        RestApiId:
+          Ref: ApiGatewayRestApi
+
+    GatewayResponseDefault5XX:
+      Type: AWS::ApiGateway::GatewayResponse
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+          gatewayresponse.header.Access-Control-Allow-Methods: "'GET,OPTIONS,POST,DELETE,PATCH,PUT'"
+        ResponseType: DEFAULT_5XX
+        RestApiId:
+          Ref: ApiGatewayRestApi    
+    
+    # Feed: Create a DynamoDB table with local secondary index and a composite key
+    FeedsDynamoDBTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        KeySchema: # Primary key
+          - AttributeName: userId
+            KeyType: HASH # Partition Key
+          - AttributeName: feedId
+            KeyType: RANGE # Sort key
+        AttributeDefinitions:
+          - AttributeName: userId
+            AttributeType: S
+          - AttributeName: createdAt
+            AttributeType: S
+          - AttributeName: updatedAt
+            AttributeType: S
+          - AttributeName: feedId
+            AttributeType: S
+          - AttributeName: caption
+            AttributeType: S
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${self:provider.environment.FEEDS_TABLE}  
+        GlobalSecondaryIndexes:
+          - IndexName: '${self:provider.environment.FEEDS_CREATED_AT_INDEX}'
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+              - AttributeName: createdAt
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL # All of the table attributes are projected into the index.
+
+    RequestBodyValidator:
+      Type: AWS::ApiGateway::RequestValidator
+      Properties:
+        Name: 'request-body-validator'
+        RestApiId: 
+          Ref: ApiGatewayRestApi
+        ValidateRequestBody: true
+        ValidateRequestParameters: false       
+
+    # Feed: Complete the bucket properties below. 
+    # Do not forget to add the CorsConfiguration propoerty
+    AttachmentsBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:provider.environment.ATTACHMENT_S3_BUCKET}
+        CorsConfiguration:
+          CorsRules:
+            - AllowedMethods:
+                - GET
+                - POST
+                - PUT
+                - DELETE
+                - HEAD
+              AllowedOrigins:
+                - '*'
+              AllowedHeaders:
+                - '*'
+              MaxAge: 300
+
+    # Feed: Complete the policy below and attach it to the bucket defined above
+    # For cross referencing the name of the bucket, use "!Ref AttachmentsBucket"
+    BucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        PolicyDocument:
+          Id: S3ReadPolicy
+          Version: "2012-10-17"
+          Statement:
+            - Sid: PublicReadForGetBucketObjets
+              Effect: Allow
+              Action:
+                - 's3:GetObject'
+              Resource: 'arn:aws:s3:::${self:provider.environment.ATTACHMENT_S3_BUCKET}/*'
+              Principal: '*'
+        Bucket: !Ref AttachmentsBucket

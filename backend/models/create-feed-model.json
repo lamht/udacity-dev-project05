@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "group",
+  "type": "object",
+  "properties": {
+    "caption": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "caption"
+  ],
+  "additionalProperties": false
+}
