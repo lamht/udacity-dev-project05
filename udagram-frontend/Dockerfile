@@ -8,7 +8,7 @@ COPY package*.json ./
 RUN npm ci
 # Bundle app source
 COPY . .
-RUN npm install -g ionic
+RUN npm install -g ionic @angular/cli && ng update
 RUN ionic build
 ## Run 
 FROM nginx:alpine
