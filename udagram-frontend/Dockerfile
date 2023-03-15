@@ -1,5 +1,5 @@
 ## Build
-FROM node:14-slim AS ionic
+FROM node:14.20.1-alpine3.16 AS ionic
 # Create app directory
 WORKDIR /usr/src/app
 # Install app dependencies
