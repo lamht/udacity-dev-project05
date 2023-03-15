@@ -2,6 +2,31 @@
 # See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 
+orbs:
+   aws-cli: circleci/aws-cli@3.1.4
+   serverless: circleci/serverless-framework@2.0.1
+   node: circleci/node@5.0.2
+
+commands: # a reusable command with parameters
+  build-image:
+    parameters:
+      image-name:
+        type: string
+      folder-name:
+        type: string
+    steps:
+      - run:
+          name: Build image <<parameters.image-name>>
+          command: |
+            cd <<parameters.folder-name>>
+            DOCKER_PATH="thanhlam00290/<<parameters.image-name>>"
+            DOCKER_TAG="${CIRCLE_WORKFLOW_ID:0:7}"
+            docker --version
+            docker build -t $DOCKER_PATH:$DOCKER_TAG .
+            docker login -p ${DOCKER_PASSWORD} -u ${DOCKER_USERNAME}
+            docker push $DOCKER_PATH:$DOCKER_TAG
+            docker tag $DOCKER_PATH:$DOCKER_TAG $DOCKER_PATH:latest
+            docker push $DOCKER_PATH:latest
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
@@ -18,9 +43,44 @@ jobs:
           name: "Say hello"
           command: "echo Hello, World!"
 
+  build-frontend:
+    docker:
+      - image: docker:latest
+    steps:
+      - checkout 
+      - setup_remote_docker     
+      - build-image:
+          image-name: "project05-frontend"
+          folder-name: "udagram-frontend"
+
+  build-severless:
+    executor: serverless/default
+    steps:
+      - checkout
+      - aws-cli/setup
+      - serverless/setup
+      - node/install:
+          node-version: '14'
+      - run: node --version
+      # look for existing cache and restore if found
+      - restore_cache:
+          key: v1-deps-{{ checksum "course-04/project/c4-final-project-starter-code/backend/package-lock.json" }}
+      # install dependencies    
+      - run:
+          name: install dependencies
+          command: cd course-04/project/c4-final-project-starter-code/backend && npm install
+      # save any changes to the cache
+      - save_cache:
+          key: v1-deps-{{ checksum "course-04/project/c4-final-project-starter-code/backend/package-lock.json" }}
+          paths: 
+            - course-04/project/c4-final-project-starter-code/backend/node_modules
+      - run: cd course-04/project/c4-final-project-starter-code/backend && export NODE_OPTIONS="--max-old-space-size=8192" && sls deploy
+
+
+  
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
-  say-hello-workflow:
+  build-workflow:
     jobs:
-      - say-hello
+      - build-frontend
