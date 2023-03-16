@@ -4,13 +4,11 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 
 import { AuthMenuButtonComponent } from './auth-menu-button/auth-menu-button.component';
-import { AuthLoginComponent } from './auth-login/auth-login.component';
-import { AuthRegisterComponent } from './auth-register/auth-register.component';
 import { AuthMenuUserComponent } from './auth-menu-button/auth-menu-user/auth-menu-user.component';
 
 import { ApiModule } from '../api/api.module';
 
-const entryComponents = [AuthMenuUserComponent, AuthMenuButtonComponent, AuthLoginComponent, AuthRegisterComponent];
+const entryComponents = [AuthMenuUserComponent, AuthMenuButtonComponent];
 const components = [...entryComponents];
 
 @NgModule({
