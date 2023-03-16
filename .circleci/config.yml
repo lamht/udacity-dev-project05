@@ -92,7 +92,7 @@ jobs:
       # install dependencies    
       - run:
           name: install dependencies
-          command: cd frontend && npm install
+          command: cd frontend && npm i -force
       # save any changes to the cache
       - save_cache:
           key: v1-deps-{{ checksum "frontend/package-lock.json" }}
