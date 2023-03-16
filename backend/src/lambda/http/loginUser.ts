@@ -4,7 +4,9 @@ import * as middy from 'middy'
 import { cors } from 'middy/middlewares'
 import { LoginUserRequest } from '../../requests/LoginUserRequest'
 import { login } from '../../businessLogic/user'
+import { createLogger } from '../../utils/logger'
 
+const logger = createLogger('Login Hander')
 export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     const loginUser: LoginUserRequest = JSON.parse(event.body)
@@ -28,6 +30,7 @@ export const handler = middy(
           })
         }
     } catch (e){
+        logger.error(e);
         return {
             statusCode: 400,
             headers: {

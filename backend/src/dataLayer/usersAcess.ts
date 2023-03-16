@@ -29,10 +29,10 @@ export class UsersAccess {
 
         logger.info("Retrieved user items", {email, "count" : result.Count})
 
-        //const items = result.Items
-        // if(result.Count > 0){
-        //     return items[0] as UserItem
-        // }
+        const items = result.Items
+        if(result.Count > 0){
+            return items[0] as UserItem
+        }
         return null;
     }
 
