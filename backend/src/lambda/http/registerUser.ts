@@ -31,7 +31,7 @@ export const handler = middy(
                 })
             }
         } catch (e) {
-            logger.error(e);
+            logger.error(e.stack);
             return {
                 statusCode: 400,
                 headers: {

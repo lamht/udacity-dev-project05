@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Router, CanActivate, RouterStateSnapshot, ActivatedRouteSnapshot, UrlTree } from '@angular/router';
-import { AuthService } from './auth.service';
+import { AuthService } from '@auth0/auth0-angular';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -19,11 +19,11 @@ export class AuthGuardService implements CanActivate {
                     | Observable<boolean
                     | UrlTree>
                     | Promise<boolean | UrlTree> {
-   if (!this.auth.currentUser$.value) {
+   if (!this.auth.user$.value) {
       this.router.navigateByUrl('/login');
     }
 
-    return this.auth.currentUser$.value !== null;
+    return this.auth.user$.value !== null;
     }
 
 }

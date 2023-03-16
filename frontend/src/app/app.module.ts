@@ -10,7 +10,7 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { MenubarComponent } from './menubar/menubar.component';
 
-import { AuthModule } from './auth/auth.module';
+import { AuthModule } from '@auth0/auth0-angular';
 import { ApiService } from './api/api.service';
 
 @NgModule({
@@ -23,7 +23,13 @@ import { ApiService } from './api/api.service';
     BrowserModule,
     IonicModule.forRoot(),
     AppRoutingModule,
-    AuthModule
+    AuthModule.forRoot({
+      domain: 'dev-xkdox7v8jiqc317u.us.auth0.com',
+      clientId: 'n2pNajitIFydRl1RxCDeVn8gtbIw3QVy',
+      authorizationParams: {
+        redirect_uri: window.location.origin
+      }
+    }),
   ],
   providers: [
     ApiService,

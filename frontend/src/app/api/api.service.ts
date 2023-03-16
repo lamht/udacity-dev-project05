@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpRequest, HttpEvent } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { map } from 'rxjs/operators';
+import { AuthService } from '@auth0/auth0-angular';
 
 const API_HOST = environment.apiHost;
 
@@ -15,7 +16,13 @@ export class ApiService {
 
   token: string;
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private auth: AuthService) {
+    auth.idTokenClaims$.subscribe(token =>{
+      if(token){
+        console.log("token " + token?.__raw);
+        setAuthToken(token?.__raw);
+      }
+    });
   }
 
   static handleError(error: Error) {

@@ -141,7 +141,7 @@ functions:
     handler: src/lambda/http/generateUploadUrl.handler
     events:
       - http:
-          method: post
+          method: get
           path: /api/v0/feed/signed-url/{fileName}
           cors: true
           authorizer: Auth
