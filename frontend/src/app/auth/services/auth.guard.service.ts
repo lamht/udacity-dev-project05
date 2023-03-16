@@ -8,10 +8,16 @@ import { Observable } from 'rxjs';
 })
 export class AuthGuardService implements CanActivate {
 
+  isLoggedIn: boolean;
+
   constructor(
     private auth: AuthService,
     private router: Router
-    ) {}
+    ) {
+      this.auth.user$.subscribe((user) => {
+        this.isLoggedIn = user !== null;
+      });
+    }
 
   canActivate(route: ActivatedRouteSnapshot,
               state: RouterStateSnapshot): boolean
@@ -19,11 +25,11 @@ export class AuthGuardService implements CanActivate {
                     | Observable<boolean
                     | UrlTree>
                     | Promise<boolean | UrlTree> {
-   if (!this.auth.user$.value) {
+   if (!this.isLoggedIn) {
       this.router.navigateByUrl('/login');
     }
 
-    return true;//this.auth.user$.value !== null;
+    return this.isLoggedIn;//this.auth.user$.value !== null;
     }
 
 }
