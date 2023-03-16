@@ -19,8 +19,8 @@ export class ApiService {
   constructor(private http: HttpClient, private auth: AuthService) {
     auth.idTokenClaims$.subscribe(token =>{
       if(token){
-        console.log("token " + token?.__raw);
-        setAuthToken(token?.__raw);
+        console.log("token " + token.__raw);
+        this.setAuthToken(token.__raw);
       }
     });
   }
