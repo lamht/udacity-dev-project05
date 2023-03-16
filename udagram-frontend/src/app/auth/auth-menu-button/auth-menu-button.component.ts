@@ -1,7 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '@auth0/auth0-angular';
-import { Browser } from '@capacitor/browser';
-import { mergeMap, tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-auth-menu-button',
