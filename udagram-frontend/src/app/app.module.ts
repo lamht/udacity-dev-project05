@@ -14,6 +14,7 @@ import { AuthMenuModule } from './auth/auth-menu.module';
 import { ApiService } from './api/api.service';
 
 import { AuthModule } from '@auth0/auth0-angular';
+import { environment } from '../environments/environment';
 
 @NgModule({
   declarations: [
@@ -27,8 +28,8 @@ import { AuthModule } from '@auth0/auth0-angular';
     AppRoutingModule,
     AuthMenuModule,
     AuthModule.forRoot({
-      domain: 'dev-xkdox7v8jiqc317u.us.auth0.com',
-      clientId: 'n2pNajitIFydRl1RxCDeVn8gtbIw3QVy',
+      domain: environment.auth0.domain,
+      clientId: environment.auth0.clientId,
       authorizationParams: {
         redirect_uri: window.location.origin
       }

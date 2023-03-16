@@ -5,7 +5,11 @@
 export const environment = {
   production: false,
   appName: 'Udagram',
-  apiHost: 'http://localhost:8080/api/v0'
+  apiHost: 'http://localhost:8080/api/v0',
+  auth0:{
+    domain: 'dev-xkdox7v8jiqc317u.us.auth0.com',
+    clientId: 'n2pNajitIFydRl1RxCDeVn8gtbIw3QVy'
+  }
 };
 
 /*
