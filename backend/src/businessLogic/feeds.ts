@@ -35,11 +35,11 @@ export async function deleteFeed(userId: string, feedId: string){
     return await feedsAccess.deleteFeed(userId, feedId)
 }
 
-export async function createAttachmentPresignedUrl(userId: string, feedId: string, fileName: string): Promise<string>{
-    logger.info(`create Presigned Url, userId ${userId}, feedId ${feedId}, fileName ${fileName}`);
-    const resignedUrl =  await attachmentUtils.getSignedUrl(feedId);
-    const s3Link = resignedUrl.split("?")[0];
-    await feedsAccess.updateAttachmentUrl(userId, feedId, s3Link);
+export async function createAttachmentPresignedUrl(userId: string, fileName: string): Promise<string>{
+    logger.info(`create Presigned Url, userId ${userId}, fileName ${fileName}`);
+    const resignedUrl =  await attachmentUtils.getSignedUrl(fileName);
+    //const s3Link = resignedUrl.split("?")[0];
+    //await feedsAccess.updateAttachmentUrl(userId, feedId, s3Link);
     return resignedUrl;
 }
 

@@ -12,7 +12,7 @@ export const handler = middy(
     // Feed: Implement creating a new Feed item
     const userId = getUserId(event);
 
-    if (!newFeed || !newFeed.caption) {
+    if (!newFeed || !newFeed.caption || !newFeed.url) {
       return {
         statusCode: 400,
         body: JSON.stringify({ error: 'Missing Feed Caption' })

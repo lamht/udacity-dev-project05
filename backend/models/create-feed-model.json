@@ -5,10 +5,14 @@
   "properties": {
     "caption": {
       "type": "string"
+    },
+    "url": {
+      "type": "string"
     }
   },
   "required": [
-    "caption"
+    "caption",
+    "url"
   ],
   "additionalProperties": false
 }

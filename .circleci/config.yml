@@ -76,11 +76,38 @@ jobs:
             - course-04/project/c4-final-project-starter-code/backend/node_modules
       - run: cd course-04/project/c4-final-project-starter-code/backend && export NODE_OPTIONS="--max-old-space-size=8192" && sls deploy
 
+  frontend-upload-to-s3:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - aws-cli/setup
+      - node/install:
+          node-version: '14'
+      - run: node --version
+      - run: npm install -g @ionic/cli
+      # look for existing cache and restore if found
+      - restore_cache:
+          key: v1-deps-{{ checksum "fontend/package-lock.json" }}
+      # install dependencies    
+      - run:
+          name: install dependencies
+          command: cd fontend && npm install
+      # save any changes to the cache
+      - save_cache:
+          key: v1-deps-{{ checksum "fontend/package-lock.json" }}
+          paths: 
+            - fontend/node_modules   
+      - run:
+          name: build frontend
+          command: cd frontend && ionic build
+      - run:
+          name: sync to s3
+          command: aws s3 sync frontend/www s3://udagram-frontend-ixo93
 
-  
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
   build-workflow:
     jobs:
-      - build-frontend
+      - frontend-upload-to-s3

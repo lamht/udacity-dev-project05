@@ -9,11 +9,10 @@ import { getUserId } from '../utils'
 
 export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    const feedId = event.pathParameters.feedId
     const fileName = event.pathParameters.fileName
     
     const userId = getUserId(event);
-    const signedUrl: string = await createAttachmentPresignedUrl(userId, feedId, fileName);
+    const signedUrl: string = await createAttachmentPresignedUrl(userId, fileName);
 
     return {
       statusCode: 200,

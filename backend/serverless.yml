@@ -46,8 +46,10 @@ provider:
   # ${self:provider.environment.ATTACHMENT_S3_BUCKET}
   environment:
     FEEDS_TABLE: Feeds-${self:provider.stage}
-    FEEDS_CREATED_AT_INDEX: CreatedAtIndex
-    ATTACHMENT_S3_BUCKET: serverless-c5-Feed-images-d5sf-${self:provider.stage}
+    FEEDS_CREATED_AT_INDEX: Feeds-CreatedAtIndex-${self:provider.stage}
+    USERS_TABLE: Users-${self:provider.stage}
+    USERS_CREATED_AT_INDEX: Users-CreatedAtIndex-${self:provider.stage}
+    ATTACHMENT_S3_BUCKET: serverless-c5-feed-images-d5sf-${self:provider.stage}
     SIGNED_URL_EXPIRATION: 300
 
   logs:
@@ -140,7 +142,7 @@ functions:
     events:
       - http:
           method: post
-          path: /api/v0/feed/{feedId}/signed-url/{fileName}
+          path: /api/v0/feed/signed-url/{fileName}
           cors: true
           authorizer: Auth
     iamRoleStatements:
@@ -160,6 +162,49 @@ functions:
           - xray:PutTraceSegments
         Resource: 
           - '*' 
+    
+  LoginUser:
+    handler: src/lambda/http/loginUser.handler
+    events:
+      - http:
+          method: post
+          path: /api/v0/user/auth/login
+          cors: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+        Resource: 'arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USERS_TABLE}/index/${self:provider.environment.USERS_CREATED_AT_INDEX}'
+      - Effect: Allow
+        Action:
+          - xray:PutTelemetryRecords
+          - xray:PutTraceSegments
+        Resource: 
+          - '*'
+    
+  RegisterUser:
+    handler: src/lambda/http/registerUser.handler
+    events:
+      - http:
+          method: post
+          path: /api/v0/user/auth
+          cors: true
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+        Resource: 'arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USERS_TABLE}/index/${self:provider.environment.USERS_CREATED_AT_INDEX}'
+      - Effect: Allow
+        Action:  
+          - dynamodb:PutItem        
+        Resource:
+          - { "Fn::GetAtt": ["UsersDynamoDBTable", "Arn" ] }
+      - Effect: Allow
+        Action:
+          - xray:PutTelemetryRecords
+          - xray:PutTraceSegments
+        Resource: 
+          - '*'
 
 resources:
   Resources:
@@ -202,11 +247,7 @@ resources:
             AttributeType: S
           - AttributeName: createdAt
             AttributeType: S
-          - AttributeName: updatedAt
-            AttributeType: S
           - AttributeName: feedId
-            AttributeType: S
-          - AttributeName: caption
             AttributeType: S
         BillingMode: PAY_PER_REQUEST
         TableName: ${self:provider.environment.FEEDS_TABLE}  
@@ -214,6 +255,34 @@ resources:
           - IndexName: '${self:provider.environment.FEEDS_CREATED_AT_INDEX}'
             KeySchema:
               - AttributeName: userId
+                KeyType: HASH
+              - AttributeName: createdAt
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL # All of the table attributes are projected into the index.
+      
+    # Feed: Create a DynamoDB table with local secondary index and a composite key
+    UsersDynamoDBTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        KeySchema: # Primary key
+          - AttributeName: email
+            KeyType: HASH # Partition Key
+          - AttributeName: userId
+            KeyType: RANGE # Sort key
+        AttributeDefinitions:
+          - AttributeName: userId
+            AttributeType: S
+          - AttributeName: createdAt
+            AttributeType: S
+          - AttributeName: email
+            AttributeType: S
+        BillingMode: PAY_PER_REQUEST
+        TableName: ${self:provider.environment.USERS_TABLE}  
+        GlobalSecondaryIndexes:
+          - IndexName: '${self:provider.environment.USERS_CREATED_AT_INDEX}'
+            KeySchema:
+              - AttributeName: email
                 KeyType: HASH
               - AttributeName: createdAt
                 KeyType: RANGE

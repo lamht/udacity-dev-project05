@@ -11,8 +11,8 @@ const logger = createLogger('FeedsAccess')
 export class FeedsAccess {
     constructor(
         private readonly docClient: DocumentClient = new XAWS.DynamoDB.DocumentClient(),
-        private readonly feedsTable = process.env.feedS_TABLE,
-        private readonly createdAtIndex = process.env.feedS_CREATED_AT_INDEX
+        private readonly feedsTable = process.env.FEEDS_TABLE,
+        private readonly createdAtIndex = process.env.FEEDS_CREATED_AT_INDEX
     ) { }
 
     async getFeeds(userId: string): Promise<FeedItem[]> {
@@ -87,7 +87,7 @@ export class FeedsAccess {
     //     logger.info("Updated feed item", {updatedfeed} )
     // }
 
-    async updateAttachmentUrl(userId: string, feedId: string, attachmentUrl: string) {
+    async updateAttachmentUrl(userId: string, feedId: string, url: string) {
         const updatedAt = new Date().toISOString();
         const updateItem: UpdateItemOutput = await this.docClient
             .update({
@@ -95,13 +95,13 @@ export class FeedsAccess {
                 Key: {feedId, userId},
                 ReturnValues: "ALL_NEW",
                 UpdateExpression:
-                  'set #attachmentUrl = :attachmentUrl, #updatedAt = :updatedAt',
+                  'set #url = :url, #updatedAt = :updatedAt',
                 ExpressionAttributeValues: {
-                  ':attachmentUrl': attachmentUrl,
+                  ':url': url,
                   ':updatedAt': updatedAt
                 },
                 ExpressionAttributeNames: {
-                  '#attachmentUrl': 'attachmentUrl',
+                  '#url': 'url',
                   '#updatedAt': 'updatedAt'
                 }
             })

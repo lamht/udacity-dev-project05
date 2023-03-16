@@ -4,5 +4,5 @@ export interface FeedItem {
   createdAt: string
   updatedAt: string
   caption: string
-  attachmentUrl?: string
+  url: string
 }
