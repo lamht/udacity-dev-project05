@@ -88,16 +88,16 @@ jobs:
       - run: npm install -g @ionic/cli
       # look for existing cache and restore if found
       - restore_cache:
-          key: v1-deps-{{ checksum "fontend/package-lock.json" }}
+          key: v1-deps-{{ checksum "frontend/package-lock.json" }}
       # install dependencies    
       - run:
           name: install dependencies
-          command: cd fontend && npm install
+          command: cd frontend && npm install
       # save any changes to the cache
       - save_cache:
-          key: v1-deps-{{ checksum "fontend/package-lock.json" }}
+          key: v1-deps-{{ checksum "frontend/package-lock.json" }}
           paths: 
-            - fontend/node_modules   
+            - frontend/node_modules   
       - run:
           name: build frontend
           command: cd frontend && ionic build
