@@ -11,6 +11,10 @@ export class FeedItemComponent {
     userId: 'cc',
     feedId: 'xx',
     url: '/assets/mock/xander0.jpg',
-    caption: 'Such a cute pup'
+    caption: 'Such a cute pup',
+    createdAt: '2022-01-01'
+  }
+
+  constructor(){
   }
 }

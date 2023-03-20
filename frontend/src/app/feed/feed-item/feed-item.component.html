@@ -1,6 +1,6 @@
-<div class="col-md-4" *ngIf="feedItem">
+<div class="col-md-8 mx-auto mb-2" *ngIf="feedItem">
     <div class="card">
-        <img class="card-img-top" src="feedItem.url" alt="Card image cap">
+        <img class="card-img-top" src="{{feedItem.url}}" alt="Card image cap">
         <div class="card-body">
             <p class="card-text">{{feedItem.caption}}</p>
         </div>

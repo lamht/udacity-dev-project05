@@ -1,6 +1,4 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { AuthService } from '@auth0/auth0-angular';
-import { Subscription } from 'rxjs';
 import { FeedItem } from '../models/feed-item.model';
 import { FeedProviderService } from '../services/feed.provider.service';
 
@@ -9,30 +7,28 @@ import { FeedProviderService } from '../services/feed.provider.service';
   templateUrl: './feed-list.component.html',
   styleUrls: ['./feed-list.component.css']
 })
-export class FeedListComponent implements OnInit, OnDestroy{
-
-  isLoggedIn: boolean = false;
-  @Input() feedItems: FeedItem[] =[];
-  subscriptions: Subscription[] = [];
-
-  constructor(private feed: FeedProviderService){
-
+export class FeedListComponent implements OnInit{
+  feeds: FeedItem[] = [];
+  isLoaded:boolean=false;
+  constructor(private svc: FeedProviderService){
     
   }
 
-  async ngOnInit() {
-    this.subscriptions.push(
-      this.feed.currentFeed$.subscribe((items) => {
-      this.feedItems = items;
-    }));
-
-    await this.feed.getFeed();
+  ngOnInit() {    
+    this.svc.getFeed().then(items =>{
+      this.feeds = items;
+      this.feeds.sort((a, b) => {
+        let fa = a.createdAt,
+        fb = b.createdAt;
+        if (fa < fb) {
+          return -1;
+        }
+        if (fa > fb) {
+            return 1;
+        }
+        return 0;
+    }).reverse();
+      this.isLoaded = true;
+    })
   }
-
-  ngOnDestroy(): void {
-    for (const subscription of this.subscriptions) {
-      subscription.unsubscribe();
-    }
-  }
-
 }

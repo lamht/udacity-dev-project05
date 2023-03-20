@@ -7,7 +7,7 @@ import { FeedNewComponent } from './feed/feed-new/feed-new.component';
 import { HomeComponent } from './home/home.component';
 
 const routes: Routes = [
-  { path: '', component: FeedListComponent },
+  { path: '', component: HomeComponent },
   { path: 'home', component: HomeComponent },
   { path: 'feed', component: FeedListComponent, canActivate: [AuthGuardService] },
   { path: 'feed/:feedId', component: FeedDetailComponent, canActivate: [AuthGuardService]},

@@ -14,9 +14,12 @@ export class AuthGuardService implements CanActivate {
     private auth: AuthService,
     private router: Router
     ) {
-      this.auth.user$.subscribe((user) => {
-        this.isLoggedIn = user !== null;
-      });
+      
+      this.auth.idTokenClaims$.subscribe(token =>{
+        if(token && token.__raw){
+          this.isLoggedIn = true;
+        }
+        });
     }
 
   canActivate(route: ActivatedRouteSnapshot,

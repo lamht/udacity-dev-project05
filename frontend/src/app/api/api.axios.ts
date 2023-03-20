@@ -60,7 +60,7 @@ export class ApiAxiosClient {
 	setAuthToken(token: any) {
 		if(token){
 		  this.axiosClient = axios.create({
-			timeout: 3000,
+			timeout: 30000,
 			headers: {
 				"Content-Type": "application/json",
 				'Authorization': `Bearer ${token}`
@@ -75,24 +75,24 @@ export class ApiAxiosClient {
 	// ---
  
 	// I perform a GET request with the given options.
-	public async get<T>( options: GetOptions ) : Promise<T> {
+	public async get( options: GetOptions ) : Promise<any> {
  
 		try {
 			const url = `${API_HOST}${options.endPoint}`;
-			var axiosResponse = await this.axiosClient.request<T>({
+			var axiosResponse = await this.axiosClient.request({
 				method: "get",
 				url: url,
 				params: options.params
 			});
- 
+			
+			
 			return( axiosResponse.data );
  
 		} catch ( error ) {
  
 			return( Promise.reject( this.normalizeError( error ) ) );
  
-		}
- 
+		} 
 	}
 
 	public async post<T>( options: GetOptions, payload: any ) : Promise<T> {
@@ -122,9 +122,9 @@ export class ApiAxiosClient {
 
 		let formData = new FormData();
 		formData.append("image", file);
-		let resp = await axios.put(signed_url, formData, {
+		let resp = await axios.put(signed_url, file, {
 			headers: {
-			'Content-Type': 'multipart/form-data'
+			'Content-Type': file.type
 			}
 		});
 		payload.url = signed_url.split("?")[0];

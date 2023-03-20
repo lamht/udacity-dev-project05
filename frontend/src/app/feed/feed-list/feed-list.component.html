@@ -1,12 +1,16 @@
-<p>feed-list works!</p>
-<div class="row mt-1">
-    <ng-container>
-        <div class="col-xs-2">            
-            <a routerLink="/feed-new" routerLinkActive="active" ariaCurrentWhenActive="page" class="btn btn-primary">New Feed</a>
-        </div>
-        <app-feed-item 
-            *ngFor="let item of feedItems"
-            [feedItem]="item">
+<div class="row">
+    <div class="col-xs-2">            
+        <a routerLink="/feed-new" routerLinkActive="active" ariaCurrentWhenActive="page" class="btn btn-primary">New Feed</a>
+    </div> 
+</div>
+<div class="row">
+    <ng-container *ngIf="isLoaded; else loading">
+        <app-feed-item *ngFor="let item of feeds" [feedItem]="item">
         </app-feed-item>
     </ng-container>
+    <ng-template #loading>
+        <div class="col-xs-2">
+            Loading...
+        </div>
+    </ng-template>
 </div>
