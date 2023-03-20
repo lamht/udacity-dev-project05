@@ -102,6 +102,9 @@ jobs:
           name: build frontend
           command: cd frontend && ng build
       - run:
+          name: remove object s3
+          command: aws s3 rm s3://udagram-frontend-ixo93 --recursive
+      - run:
           name: sync to s3
           command: aws s3 sync frontend/www s3://udagram-frontend-ixo93
 
