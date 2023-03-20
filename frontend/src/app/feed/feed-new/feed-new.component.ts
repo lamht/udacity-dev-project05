@@ -14,6 +14,7 @@ export class FeedNewComponent {
     file: new FormControl('', [Validators.required]),
     fileSource: new FormControl('', [Validators.required])
   });
+  waiting: boolean=false;
 
   previewDataUrl: string | ArrayBuffer | null = null;
 
@@ -60,10 +61,15 @@ export class FeedNewComponent {
     let file = this.myForm.get('fileSource')?.value;
     this.f.fileSource.setValue("");
     if (caption && file) {
+      this.waiting = true;
       this.feed.uploadFeedItem(caption, file)
         .then((result) => {
           //redirect to feed list
+          this.waiting = false;
           this.router.navigate(['feed']);
+        }).catch((error) =>{
+          this.waiting = false;
+          alert("Error post the feed.");
         });
     }
   }
