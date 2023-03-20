@@ -85,7 +85,7 @@ jobs:
       - node/install:
           node-version: '14'
       - run: node --version
-      # - run: npm install -g @ionic/cli
+      - run: npm install -g @angular/cli
       # look for existing cache and restore if found
       - restore_cache:
           key: v1-deps-{{ checksum "frontend/package-lock.json" }}
