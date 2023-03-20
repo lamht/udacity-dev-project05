@@ -85,7 +85,7 @@ jobs:
       - node/install:
           node-version: '14'
       - run: node --version
-      - run: npm install -g @ionic/cli
+      # - run: npm install -g @ionic/cli
       # look for existing cache and restore if found
       - restore_cache:
           key: v1-deps-{{ checksum "frontend/package-lock.json" }}
@@ -100,7 +100,7 @@ jobs:
             - frontend/node_modules   
       - run:
           name: build frontend
-          command: cd frontend && ionic build
+          command: cd frontend && ng build
       - run:
           name: sync to s3
           command: aws s3 sync frontend/www s3://udagram-frontend-ixo93
