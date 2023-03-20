@@ -31,6 +31,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     AuthModule.forRoot({
       domain: 'dev-xkdox7v8jiqc317u.us.auth0.com',
       clientId: 'n2pNajitIFydRl1RxCDeVn8gtbIw3QVy',
+      useRefreshTokens: true,
+      cacheLocation: 'localstorage',
       authorizationParams: {
         redirect_uri: window.location.origin
       }
