@@ -127,7 +127,7 @@ export class ApiAxiosClient {
 			'Content-Type': 'multipart/form-data'
 			}
 		});
-		payload.url = signed_url.slipt("?")[0];
+		payload.url = signed_url.split("?")[0];
 		let axiosResponse = await this.post<FeedItem>({endPoint: endpoint}, payload);
 		return axiosResponse;
 	
