@@ -1,22 +1,22 @@
 import { NgModule } from '@angular/core';
-import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
+import { AuthGuardService } from './auth/services/auth.guard.service';
+import { FeedDetailComponent } from './feed/feed-detail/feed-detail.component';
+import { FeedListComponent } from './feed/feed-list/feed-list.component';
+import { FeedNewComponent } from './feed/feed-new/feed-new.component';
+import { HomeComponent } from './home/home.component';
 
 const routes: Routes = [
-  {
-    path: '',
-    redirectTo: 'home',
-    pathMatch: 'full'
-  },
-  {
-    path: 'home',
-    loadChildren: './home/home.module#HomePageModule'
-  }
+  { path: '', component: FeedListComponent },
+  { path: 'home', component: HomeComponent },
+  { path: 'feed', component: FeedListComponent, canActivate: [AuthGuardService] },
+  { path: 'feed/:feedId', component: FeedDetailComponent, canActivate: [AuthGuardService]},
+  { path: 'feed-new', component: FeedNewComponent, canActivate: [AuthGuardService]},
 ];
 
+
 @NgModule({
-  imports: [
-    RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules })
-  ],
+  imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

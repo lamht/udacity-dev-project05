@@ -9,10 +9,10 @@ import { getUserId } from '../utils'
 
 export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    const FeedId = event.pathParameters.FeedId
+    const feedId = event.pathParameters.feedId
     // Feed: Remove a Feed item by id
     const userId = getUserId(event);
-    await deleteFeed(userId, FeedId)
+    await deleteFeed(userId, feedId)
 
     return {
       statusCode: 204,

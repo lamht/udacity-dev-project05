@@ -1,6 +1,8 @@
-<ion-card class="photo-card" *ngIf="feedItem">
-  <ion-img [src]="feedItem.url"></ion-img>
-  <ion-card-content>
-    <p>{{feedItem.caption}}</p>
-  </ion-card-content>
-</ion-card>
+<div class="col-md-4" *ngIf="feedItem">
+    <div class="card">
+        <img class="card-img-top" src="feedItem.url" alt="Card image cap">
+        <div class="card-body">
+            <p class="card-text">{{feedItem.caption}}</p>
+        </div>
+    </div>
+</div>

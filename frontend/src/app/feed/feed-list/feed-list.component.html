@@ -1,6 +1,12 @@
-<div class="feed">
-  <app-feed-item 
-    *ngFor="let item of feedItems"
-    [feedItem]="item">
-  </app-feed-item>
+<p>feed-list works!</p>
+<div class="row mt-1">
+    <ng-container>
+        <div class="col-xs-2">            
+            <a routerLink="/feed-new" routerLinkActive="active" ariaCurrentWhenActive="page" class="btn btn-primary">New Feed</a>
+        </div>
+        <app-feed-item 
+            *ngFor="let item of feedItems"
+            [feedItem]="item">
+        </app-feed-item>
+    </ng-container>
 </div>

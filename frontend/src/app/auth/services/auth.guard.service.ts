@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 })
 export class AuthGuardService implements CanActivate {
 
-  isLoggedIn: boolean;
+  isLoggedIn: boolean = false;
 
   constructor(
     private auth: AuthService,
@@ -26,7 +26,7 @@ export class AuthGuardService implements CanActivate {
                     | UrlTree>
                     | Promise<boolean | UrlTree> {
    if (!this.isLoggedIn) {
-      this.router.navigateByUrl('/login');
+      this.router.navigateByUrl('/home');
     }
 
     return this.isLoggedIn;//this.auth.user$.value !== null;

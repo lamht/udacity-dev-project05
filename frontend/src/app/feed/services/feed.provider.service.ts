@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { FeedItem, feedItemMocks } from '../models/feed-item.model';
 import { BehaviorSubject } from 'rxjs';
 
-import { ApiService } from '../../api/api.service';
+import { ApiAxiosClient } from 'src/app/api/api.axios';
 
 @Injectable({
   providedIn: 'root'
@@ -10,11 +10,11 @@ import { ApiService } from '../../api/api.service';
 export class FeedProviderService {
   currentFeed$: BehaviorSubject<FeedItem[]> = new BehaviorSubject<FeedItem[]>([]);
 
-  constructor(private api: ApiService) { }
+  constructor(private api: ApiAxiosClient) { }
 
-  async getFeed(): Promise<BehaviorSubject<FeedItem[]>> {
-    const req = await this.api.get('/feed');
-    const items = <FeedItem[]> req.rows;
+  async getFeed(): Promise<BehaviorSubject<FeedItem[]>> {    
+    
+    const items = <FeedItem[]>  await this.api.get<FeedItem[]>({endPoint:'/feed'});
     this.currentFeed$.next(items);
     return Promise.resolve(this.currentFeed$);
   }
