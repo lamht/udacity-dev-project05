@@ -11,6 +11,7 @@ import { FeedDetailComponent } from './feed/feed-detail/feed-detail.component';
 import { HomeComponent } from './home/home.component';
 import { FeedNewComponent } from './feed/feed-new/feed-new.component';
 import { FeedItemComponent } from './feed/feed-item/feed-item.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import { FeedItemComponent } from './feed/feed-item/feed-item.component';
   imports: [
     BrowserModule,
     AppRoutingModule,
+    ReactiveFormsModule,
     AuthModule.forRoot({
       domain: 'dev-xkdox7v8jiqc317u.us.auth0.com',
       clientId: 'n2pNajitIFydRl1RxCDeVn8gtbIw3QVy',

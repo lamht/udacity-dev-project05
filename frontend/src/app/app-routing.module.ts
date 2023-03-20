@@ -11,7 +11,7 @@ const routes: Routes = [
   { path: 'home', component: HomeComponent },
   { path: 'feed', component: FeedListComponent, canActivate: [AuthGuardService] },
   { path: 'feed/:feedId', component: FeedDetailComponent, canActivate: [AuthGuardService]},
-  { path: 'feed-new', component: FeedNewComponent, canActivate: [AuthGuardService]},
+  { path: 'feed-new', component: FeedNewComponent,canActivate: [AuthGuardService]},
 ];
 
 

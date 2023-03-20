@@ -1,7 +1,43 @@
 <p>feed-new works!</p>
 
 <div class="row mt-1">
-    <div class="col-xs-2">            
-        <a routerLink="/feed" routerLinkActive="active" ariaCurrentWhenActive="page" class="btn btn-primary">Go to Feeds</a>
+    <div class="col-xs-2">
+        <a routerLink="/feed" routerLinkActive="active" ariaCurrentWhenActive="page" class="btn btn-primary">Go to
+            Feeds</a>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <form [formGroup]="myForm" (ngSubmit)="submit()">
+    
+            <div class="form-group">
+                <label for="caption">Caption</label>
+                <input 
+                    formControlName="caption"
+                    id="caption" 
+                    type="text" 
+                    class="form-control">
+                <div *ngIf="f['caption'].touched && f['caption'].invalid" class="alert alert-danger">
+                    <div *ngIf="f['caption'].errors && f['caption'].errors['required']">Caption is required.</div>
+                    <div *ngIf="f['caption'].errors && f['caption'].errors['minlength']">Caption should be 3 character.</div>
+                </div>
+            </div>
+                
+            <div class="form-group">
+                <label for="file">Image</label>
+                <input 
+                    formControlName="file"
+                    id="file" 
+                    type="file" 
+                    class="form-control"
+                    (change)="onFileChange($event)">
+                <div *ngIf="f['file'].touched && f['file'].invalid" class="alert alert-danger">
+                    <div *ngIf="f['file'].errors && f['file'].errors['required']">File is required.</div>
+                </div>
+            </div>
+                    
+            <button class="btn btn-primary" [disabled]="myForm.invalid" type="submit">Submit</button>
+        </form>
+
     </div>
 </div>
