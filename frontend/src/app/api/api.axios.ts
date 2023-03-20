@@ -45,7 +45,6 @@ export class ApiAxiosClient {
 		this.axiosClient = axios.create({
 			timeout: 3000,
 			headers: {
-				"X-Initialized-At": Date.now().toString(),
 				"Content-Type": "application/json"
 			}
 		});
@@ -63,7 +62,6 @@ export class ApiAxiosClient {
 		  this.axiosClient = axios.create({
 			timeout: 3000,
 			headers: {
-				"X-Initialized-At": Date.now().toString(),
 				"Content-Type": "application/json",
 				'Authorization': `Bearer ${token}`
 			}

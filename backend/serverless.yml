@@ -162,49 +162,7 @@ functions:
           - xray:PutTraceSegments
         Resource: 
           - '*' 
-    
-  LoginUser:
-    handler: src/lambda/http/loginUser.handler
-    events:
-      - http:
-          method: post
-          path: /api/v0/user/auth/login
-          cors: true
-    iamRoleStatements:
-      - Effect: Allow
-        Action:
-          - dynamodb:Query
-        Resource: 'arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USERS_TABLE}/index/${self:provider.environment.USERS_CREATED_AT_INDEX}'
-      - Effect: Allow
-        Action:
-          - xray:PutTelemetryRecords
-          - xray:PutTraceSegments
-        Resource: 
-          - '*'
-    
-  RegisterUser:
-    handler: src/lambda/http/registerUser.handler
-    events:
-      - http:
-          method: post
-          path: /api/v0/user/auth
-          cors: true
-    iamRoleStatements:
-      - Effect: Allow
-        Action:
-          - dynamodb:Query
-        Resource: 'arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.USERS_TABLE}/index/${self:provider.environment.USERS_CREATED_AT_INDEX}'
-      - Effect: Allow
-        Action:  
-          - dynamodb:PutItem        
-        Resource:
-          - { "Fn::GetAtt": ["UsersDynamoDBTable", "Arn" ] }
-      - Effect: Allow
-        Action:
-          - xray:PutTelemetryRecords
-          - xray:PutTraceSegments
-        Resource: 
-          - '*'
+     
 
 resources:
   Resources:
