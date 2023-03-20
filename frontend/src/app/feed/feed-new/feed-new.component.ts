@@ -58,8 +58,9 @@ export class FeedNewComponent {
   submit() {
     let caption = this.myForm.get('caption')?.value;
     let file = this.myForm.get('fileSource')?.value;
+    this.f.fileSource.setValue("");
     if (caption && file) {
-      this.feed.uploadFeedItem(caption, this.myForm.get('fileSource')?.value)
+      this.feed.uploadFeedItem(caption, file)
         .then((result) => {
           //redirect to feed list
           this.router.navigate(['feed']);
